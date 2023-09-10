@@ -1,34 +1,84 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
 
-function App() {
-  const [count, setCount] = useState(0)
+
+
+const StatisticLine =(props)=> {
+return(
+
+    <tbody>
+      <tr>
+        <td>{props.text}</td>
+        <td>{props.value}</td>
+      </tr>
+    </tbody>
+
+
+)
+}
+
+
+
+const ShowStats =(props)=>{
+
+  const good = props.goodVal
+  const neutral = props.neutralVal
+  const bad = props.badVal
+
+  const All = good + neutral + bad
+  const Average = (good-bad) / All 
+  const Positive = (good / All)*100  
+
+  if (All===0) {
+
+    return(
+      <p>No feedback given</p>
+    )
+  }
+  return(
+    <div>
+      <table>
+        <StatisticLine text = 'good' value = {good}/>
+        <StatisticLine text = 'neutral' value = {neutral}/>
+        <StatisticLine text = 'bad' value = {bad}/>
+        <StatisticLine text = 'all' value = {All}/>
+        <StatisticLine text = 'average' value = {Average}/>
+        <StatisticLine text = 'positive' value = {Positive + ' %'}/>
+      </table>
+      
+    </div>
+
+  )
+
+}
+
+
+const Button =(props)=>{
+  return(
+    <button onClick={props.action}>{props.text}</button>
+  )
+}
+
+
+const App = () => {
+  // tallenna napit omaan tilaansa
+  const [good, setGood] = useState(0)
+  const [neutral, setNeutral] = useState(0)
+  const [bad, setBad] = useState(0)
+
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <div>
+      <h1>give feedback</h1>
+      <br />
+      <Button action = {()=> setGood(good + 1)} text = 'good' />
+      <Button action = {()=> setNeutral(neutral + 1)} text = 'neutral' />
+      <Button action = {()=> setBad(bad + 1)} text = 'bad' />
+      <br />
+      <h1>statistics</h1>
+      <br/>
+      <ShowStats goodVal = {good} neutralVal = {neutral} badVal = {bad}/>
+      
+    </div>
   )
 }
 
