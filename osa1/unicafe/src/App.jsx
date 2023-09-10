@@ -1,7 +1,6 @@
 import { useState } from 'react'
 
 
-
 const StatisticLine =(props)=> {
 return(
 
@@ -12,10 +11,8 @@ return(
       </tr>
     </tbody>
 
-
 )
 }
-
 
 
 const ShowStats =(props)=>{
@@ -77,7 +74,6 @@ const App = () => {
       <h1>statistics</h1>
       <br/>
       <ShowStats goodVal = {good} neutralVal = {neutral} badVal = {bad}/>
-      
     </div>
   )
 }
