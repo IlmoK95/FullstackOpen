@@ -5,6 +5,13 @@ import { useState } from 'react'
 const newIndex =(props)=> Math.floor(Math.random() * props.maxim)
 
 
+const HeaderDisplay=(props)=>{
+  return (
+    <h1>{props.header}</h1>
+  )
+
+}
+
 
 const Button=(props)=>{
   return(
@@ -12,7 +19,13 @@ const Button=(props)=>{
   )
 }
 
-  
+
+const Display =(props)=>{
+  return(
+    <p>{props.text}</p>
+  )
+}
+
 
 const App = () => {
   const anecdotes =  [
@@ -28,6 +41,7 @@ const App = () => {
 
   const [selected, setSelected] = useState(0)
   const [properties, setProperties] = useState(anecdotes)
+  const [mostPopular, setMostPopular] = useState([anecdotes[0]])
   const maxim = anecdotes.length
 
   function updateLikes() {
@@ -35,27 +49,41 @@ const App = () => {
     const mappedList = properties.map(obj => {
       if (obj.id === selected){
 
-        const newLike = obj.vote + 1
-        return {...obj, vote : newLike}
+        const newVote = obj.vote + 1
+        return {...obj, vote : newVote}
       }
       return obj
 
     })
 
     setProperties(mappedList)
-
+    {/*after the likes are updated, most popular anecdote is re-checked*/}
+    GetMostPopular(mappedList)
 
   }
-    
-    
 
+  function GetMostPopular(mappedList) {
+
+    const newMostPopular = []
+    const copyList = [...mappedList]
+    const sortedList = copyList.sort((a,b)=> (a.vote > b.vote) ? -1 : 1)
+    newMostPopular.push(sortedList[0])
+
+    setMostPopular(newMostPopular)
+   
+  }
+    
   return (
     <div>
-      {anecdotes[selected].anecdote}
+      <HeaderDisplay header = 'Anecdote of the day'/>
+      <Display text= {properties[selected].anecdote}/>
       <Button action={()=>setSelected(newIndex({maxim}))} text='next anecdote'/>
       <Button action={()=>updateLikes()} text='vote'/>
-      <p>has {properties[selected].vote} votes</p>
-      
+      <Display text = {'has ' +properties[selected].vote + ' votes'}/>
+      <HeaderDisplay header = 'Anecdote with most votes'/>
+      <Display text={mostPopular[0].anecdote}/>
+      <Display text={'has '+ mostPopular[0].vote + ' votes'}/>
+     
     </div>
   )
 }
