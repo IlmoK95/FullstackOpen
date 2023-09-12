@@ -79,7 +79,7 @@ const App = () => {
       <Display text= {properties[selected].anecdote}/>
       <Button action={()=>setSelected(newIndex({maxim}))} text='next anecdote'/>
       <Button action={()=>updateLikes()} text='vote'/>
-      <Display text = {'has ' +properties[selected].vote + ' votes'}/>
+      <Display text = {'has ' + properties[selected].vote + ' votes'}/>
       <HeaderDisplay header = 'Anecdote with most votes'/>
       <Display text={mostPopular[0].anecdote}/>
       <Display text={'has '+ mostPopular[0].vote + ' votes'}/>
