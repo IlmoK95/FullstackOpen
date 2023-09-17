@@ -3,7 +3,7 @@ import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import People from './components/People'
 import {useState, useEffect} from 'react'
-import axios from 'axios'
+import NumberService from './services/numbers'
 
 
 const App = () => {
@@ -12,19 +12,51 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [newFilter, setFilter] = useState('')
-  const [Filtered, setFiltering] =useState([])
+  const [Filtered, setFilteredList] =useState([])
+
+
+
+
 
 
   useEffect(()=>{
     console.log('effect')
-    axios
-        .get('http://localhost:3002/persons')
+    NumberService
+        .getAll()
         .then(response =>{
           console.log('promise fulfilled')
+          console.group(response.data)
           setPersons(response.data)
+          setFilteredList(response.data)
+        }).catch(error => {
+            console.log(error)
         })
 
   }, [] )
+
+
+  const handleDelete =(id)=>{
+    console.log(GetByID(id))
+    const personName = GetByID(id)[0].name
+    if (window.confirm(`Delete ${personName} ?`)) {
+      NumberService
+        .Del(id)
+        .then(response => {
+          console.log(response.data)
+          const updatedList = persons.filter( person =>person.id !== id)
+          setPersons(updatedList)
+          FilteredPersons(updatedList, newFilter)
+
+        }).catch(error => {
+          console.log(error)
+        })
+    }
+  }
+
+
+  const GetByID =(id)=>{
+    return persons.filter( person => person.id === id)
+  }
 
 
   const handleNamechange =(event)=>{
@@ -43,12 +75,28 @@ const App = () => {
       window.alert(`${newName} is already added to phonebook`)   
     }
     else {
-      const newObj = { name : newName, number : newNumber, id : persons.length + 1}
-      const updatedList = persons.concat(newObj)
-      setPersons(updatedList)
-      setNewName('')
-      setNewNumber('')
+      const newObj = { name : newName, number : newNumber}
+      NumberService
+        .AddNew(newObj)
+        .then(response => {
+          console.log(response.data)
+          const newList = persons.concat(response.data)
+          setPersons(newList)
+          setNewName('')
+          setNewNumber('')
+          FilteredPersons(newList, newFilter)
+        })
+        .catch(error => {
+          console.log(error)
+        })
     }
+  }
+
+
+  const FilteredPersons =(upDatedList, currentVal)=>{
+    console.log(upDatedList)
+    const FilteredList = upDatedList.filter(person =>FilterFunction(person, currentVal))
+    setFilteredList(FilteredList)
   }
 
   const handleFilterChange =(event)=>{
@@ -56,15 +104,11 @@ const App = () => {
     const currentVal = event.target.value
     console.log(currentVal)
     setFilter(currentVal)
-
-    const FilteredList = persons.filter(person =>FilterFunction(person, currentVal))
-    setFiltering(FilteredList)
+    FilteredPersons(persons, currentVal)
   }
 
+
   function FilterFunction (person, currentVal){
-    if (currentVal===""){
-      return false
-    }
     return person.name.includes(currentVal)
   }
 
@@ -82,7 +126,7 @@ const App = () => {
                     ButtonText = "add" onClick = {handlePersonAddition} />
 
       <h2>Numbers</h2>
-      <People peopleToShow = {Filtered} />
+      <People peopleToShow = {Filtered} DelFunction = {handleDelete} />
     </div>
   )
 
