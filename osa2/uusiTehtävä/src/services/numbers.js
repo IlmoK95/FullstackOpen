@@ -14,4 +14,8 @@ const Del =( id ) => {
     return axios.delete(`${baseURL}/${id}`)
 }
 
-export default {getAll, AddNew, Del}
+const upDate=(id, obj)=>{
+    return axios.put(`${baseURL}/${id}`, obj)
+}
+
+export default {getAll, AddNew, Del, upDate}

@@ -4,6 +4,7 @@ import PersonForm from './components/PersonForm'
 import People from './components/People'
 import {useState, useEffect} from 'react'
 import NumberService from './services/numbers'
+import Notification from './components/Notification'
 
 
 const App = () => {
@@ -13,9 +14,9 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('')
   const [newFilter, setFilter] = useState('')
   const [Filtered, setFilteredList] =useState([])
-
-
-
+  const [Message, setMessage] = useState('')
+  const [errorCode, raiseError] = useState(0)
+  // errorCode= 0: no errors raised; 1: error raised //
 
 
 
@@ -43,12 +44,17 @@ const App = () => {
         .Del(id)
         .then(response => {
           console.log(response.data)
-          const updatedList = persons.filter( person =>person.id !== id)
-          setPersons(updatedList)
-          FilteredPersons(updatedList, newFilter)
+          const newList = persons.filter( person =>person.id !== id)
+          upDateLists(newList)
+          raiseError(0)
+          handleMessage(`${personName} deleted`, 0)
 
         }).catch(error => {
           console.log(error)
+          
+          raiseError(1)
+          handleMessage(`Information of ${personName} was already deleted from server`, 1)
+
         })
     }
   }
@@ -67,12 +73,53 @@ const App = () => {
     setNewNumber(event.target.value)
   }
 
+
+  const upDateNumber =()=>{
+    const person = persons.find(person => person.name === newName)
+    const id = person.id
+    const changedPerson = {...person, number : newNumber}
+
+    NumberService
+      .upDate(id, changedPerson)
+      .then(response => {
+        const returnedPerson = response.data
+        const newList = persons.map(person => person.id != id ? person : returnedPerson )
+        upDateLists(newList)
+        ClearInfoFields() 
+        handleMessage(`${newName}'s number changed`, 0)
+
+      })
+  }
+
+
+  const upDateLists =(upDatedList)=>{
+    setPersons(upDatedList)
+    UpDateFilteredPersons(upDatedList, newFilter)
+  }
+
+
+  const ClearInfoFields =()=>{
+    setNewName('')
+    setNewNumber('')
+  }
+
+
+  const handleMessage =(msg, err)=>{
+    raiseError(err)
+    setMessage(msg)
+    setTimeout(()=>{
+      setMessage(null)
+    }, 2000)
+  }
+
   const handlePersonAddition =(event)=>{
 
     event.preventDefault()
     const Names = persons.map(person => person.name)
     if (Names.includes(newName)) {
-      window.alert(`${newName} is already added to phonebook`)   
+      if (window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)){
+        upDateNumber()
+      }   
     }
     else {
       const newObj = { name : newName, number : newNumber}
@@ -81,10 +128,9 @@ const App = () => {
         .then(response => {
           console.log(response.data)
           const newList = persons.concat(response.data)
-          setPersons(newList)
-          setNewName('')
-          setNewNumber('')
-          FilteredPersons(newList, newFilter)
+          upDateLists(newList)
+          ClearInfoFields()
+          handleMessage(`Added ${newName}`, 0)       
         })
         .catch(error => {
           console.log(error)
@@ -93,7 +139,7 @@ const App = () => {
   }
 
 
-  const FilteredPersons =(upDatedList, currentVal)=>{
+  const UpDateFilteredPersons =(upDatedList, currentVal)=>{
     console.log(upDatedList)
     const FilteredList = upDatedList.filter(person =>FilterFunction(person, currentVal))
     setFilteredList(FilteredList)
@@ -104,7 +150,7 @@ const App = () => {
     const currentVal = event.target.value
     console.log(currentVal)
     setFilter(currentVal)
-    FilteredPersons(persons, currentVal)
+    UpDateFilteredPersons(persons, currentVal)
   }
 
 
@@ -112,13 +158,10 @@ const App = () => {
     return person.name.includes(currentVal)
   }
 
-
-
-
   return (
     <div>
       <h2>Phonebook</h2>
-
+        <Notification message = {Message} err = {errorCode}/>
         <Filter text = "filter shown with" value={newFilter} onChange={handleFilterChange}/>
         <h2>Add a new</h2>
         <PersonForm NameText = "name:" NameValue = {newName} NameOnChange={handleNamechange}
