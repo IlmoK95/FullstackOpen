@@ -15,6 +15,10 @@ const App =()=> {
   const [filteredLen, setFilteredLen] = useState(null)
   const [opt, ShowOne] = useState(false)
   const [objToShow_, SetToShow] = useState({})
+  const [Weather, SetWeather] = useState({})
+  const [Country_weather_to_show, Set_country_weather_to_show] = useState({})
+  const [Lat, SetLat] = useState(0.0)
+  const [Lon, SetLon] = useState(0.0)
 
 
   const ObjToShow=(id)=>{
@@ -57,6 +61,38 @@ const App =()=> {
 
   }
 
+  const handleCountryWeatherToShow =(obj)=>{
+    Set_country_weather_to_show(obj)
+    SetLat(obj.capitalInfo.latlng[0])
+    SetLon(obj.capitalInfo.latlng[1])
+
+  }
+
+
+
+  useEffect(()=>{
+
+    const isObjEmpty =(obj)=> {
+      return Object.keys(obj).length === 0;
+  }
+
+    if (!isObjEmpty(Country_weather_to_show)) {
+      console.log(Lat+" ,"+Lon)
+      
+
+      CountryService
+        .GetWeatherData(Lat , Lon)
+        .then(response => {
+          console.log("promise for weather data fulfilled")
+          SetWeather(response.data)
+        })
+        .catch(error =>
+          console.log(error))
+
+    }
+
+  }, [Country_weather_to_show])
+
  
 
   useEffect(()=>{
@@ -65,7 +101,7 @@ const App =()=> {
     CountryService
       .GetAllNames()
       .then(response => {
-        console.log("promise fulfilled")
+        console.log("promise for country data fulfilled")
         setCountries(response.data)
           
        } )
@@ -77,7 +113,8 @@ const App =()=> {
 
       <div>
         <Filter text='find countries' handleFilterChange = {handleFilterChange} />
-        { val ? <Countries countries = {filtered} opt = {opt} oneToShow = {ObjToShow} obj = {objToShow_}/> : 'Too many matches. specify another filter'  }
+        { val ? <Countries countries = {filtered} opt = {opt} oneToShow = {ObjToShow} obj = {objToShow_} SetWeather = {handleCountryWeatherToShow}
+        weather = {Weather}/> : 'Too many matches. specify another filter'  }
       </div>
 
   )
