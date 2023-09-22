@@ -20,8 +20,12 @@ let numbers = [
 
 
 const express = require('express')
+var morgan = require('morgan')
+morgan.token('POST_body', function (req, res) { return JSON.stringify(req.body)})
+
 const app = express()
 app.use(express.json())
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :POST_body'))
 
 
 
@@ -89,7 +93,8 @@ app.get('/api/persons', (req, res) => {
 app.post('/api/persons', (req, res) =>{
 
     const new_id = Math.floor(Math.random() * 10000)
-    const new_number = req.body
+
+    const new_number = {...req.body}
 
     
     if (!new_number) {
@@ -100,6 +105,7 @@ app.post('/api/persons', (req, res) =>{
     if (CheckValidity(req, res)){
         console.log(new_number)
         new_number.id = new_id
+        console.log(req.body)
         numbers = numbers.concat(new_number)
         res.json(numbers)
 
