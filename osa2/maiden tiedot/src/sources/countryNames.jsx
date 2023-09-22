@@ -8,8 +8,7 @@ const GetAllNames =()=> {
 }
 
 const GetWeatherData =(lat, lon)=> {
-    console.log(lat)
-    console.log(lon)
+
     return axios.get(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${api_key}`)
 
 }
