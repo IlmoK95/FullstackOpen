@@ -21,11 +21,17 @@ let numbers = [
 
 const express = require('express')
 var morgan = require('morgan')
-morgan.token('POST_body', function (req, res) { return JSON.stringify(req.body)})
+const cors = require('cors')
 
+
+morgan.token('POST_body', function (req, res) { return JSON.stringify(req.body)})
 const app = express()
+
+
 app.use(express.json())
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :POST_body'))
+app.use(cors())
+app.use(express.static('dist'))
 
 
 
@@ -103,19 +109,16 @@ app.post('/api/persons', (req, res) =>{
         })
       }
     if (CheckValidity(req, res)){
-        console.log(new_number)
         new_number.id = new_id
-        console.log(req.body)
         numbers = numbers.concat(new_number)
-        res.json(numbers)
+        res.json(new_number)
 
     }
 
 })
 
 
-const PORT = 3001
-app.listen(PORT, () =>{
-    console.log(`Server is running on ${PORT}`)
-
-  })
+const PORT = process.env.PORT || 3001
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`)
+})
