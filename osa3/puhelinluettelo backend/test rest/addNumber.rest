@@ -1,8 +1,13 @@
 POST http://localhost:3001/api/persons
 Content-Type: application/json
 
-{   "id":0,
-    "name":"Annadfggergfgyhi jaakko",
-    "number": "18892020+1"
+{   
+    "name":"Ax",
+    "number": "1020+1"
 }
+
+
+#----------------------------------#
+
+
 

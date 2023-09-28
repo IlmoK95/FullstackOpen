@@ -133,7 +133,7 @@ const App = () => {
           handleMessage(`Added ${newName}`, 0)       
         })
         .catch(error => {
-          console.log(error)
+          handleMessage(error.response.data, 1)
         })
     }
   }
