@@ -89,6 +89,9 @@ const App = () => {
         handleMessage(`${newName}'s number changed`, 0)
 
       })
+      .catch(error =>{
+        handleMessage(error.response.data.error, 1)
+      })
   }
 
 
@@ -133,7 +136,8 @@ const App = () => {
           handleMessage(`Added ${newName}`, 0)       
         })
         .catch(error => {
-          handleMessage(error.response.data, 1)
+
+          handleMessage(error.response.data.error, 1)
         })
     }
   }

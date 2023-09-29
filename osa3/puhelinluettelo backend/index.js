@@ -6,7 +6,6 @@ var morgan = require('morgan')
 const cors = require('cors')
 const Person = require('./models/person')
 const person = require('./models/person')
-
 morgan.token('POST_body', function (req, res) { return JSON.stringify(req.body)})
 const app = express()
 
@@ -15,21 +14,6 @@ app.use(express.json())
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :POST_body'))
 app.use(cors())
 app.use(express.static('dist'))
-
-const errorHandler = (error, request, response, next) => {
-    console.error(error.message)
-  
-    if (error.name === 'CastError') {
-      return response.status(400).send({ error: 'malformatted id' })
-    }
-    else if (error.name ==='ValidationError') {
-        return response.status(400).json({ error: error.message})
-    }
-  
-    next(error)
-  }
-  app.use(errorHandler)
-
 
 
 const getDate =()=> {return `<p>${Date()}</p>`}
@@ -41,7 +25,7 @@ app.put('/api/persons/:id', (req, res, next) => {
       name: body.name,
       number: body.number,
     }
-    Person.findByIdAndUpdate(req.params.id, person, { new: true })
+    Person.findByIdAndUpdate(req.params.id, person, { new: true, runValidators : true, context : 'query' })
       .then(updatedPerson => {
         res.json(updatedPerson)
       })
@@ -105,6 +89,20 @@ app.post('/api/persons', (req, res, next) =>{
 
 
 })
+
+const errorHandler = (error, request, response, next) => {
+    console.error(error.message)
+  
+    if (error.name === 'CastError') {
+      return response.status(400).send({ error: 'malformatted id' })
+    }
+    else if (error.name ==='ValidationError') {
+        return response.status(400).json({ error: error.message})
+    }
+  
+    next(error)
+  }
+  app.use(errorHandler)
 
 
 const PORT = process.env.PORT || 3001
