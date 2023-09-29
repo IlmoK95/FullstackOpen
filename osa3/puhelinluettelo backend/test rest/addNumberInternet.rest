@@ -1,0 +1,7 @@
+POST https://cool-paper-7533.fly.dev/api/persons
+Content-Type: application/json
+
+{   
+    "name":"An",
+    "number": "18892020+1"
+}

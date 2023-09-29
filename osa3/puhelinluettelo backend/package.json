@@ -1,0 +1,31 @@
+{
+  "name": "puh_backend",
+  "version": "0.0.1",
+  "description": "puhelinluettelon backend",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error no test specified\" && exit 1",
+    "dev": "nodemon index.js",
+    "build:ui": "@powershell Remove-Item -Recurse -Force dist && cd C:/Users/IlmoK/OneDrive/Tiedostot/GitHub/FullstackOpen/osa2/uusiTehtävä && npm run build && @powershell Copy-Item dist -Recurse 'C:/Users/IlmoK/OneDrive/Tiedostot/GitHub/FullstackOpen/osa3/puhelinluettelo backend'",
+    "deploy": "fly deploy",
+    "deploy:full": "npm run build:ui && npm run deploy",
+    "logs:prod": "fly logs",
+    "lint": "eslint ."
+  },
+  "author": "Ilmo K",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "http-date": "^1.0.3",
+    "mongoose": "^7.5.3",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "@flydotio/dockerfile": "^0.4.10",
+    "eslint": "^8.50.0",
+    "nodemon": "^3.0.1"
+  }
+}
