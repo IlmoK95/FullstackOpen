@@ -79,7 +79,6 @@ const App =()=> {
     if (!isObjEmpty(Country_weather_to_show)) {
       console.log(Lat+" ,"+Lon)
       
-
       CountryService
         .GetWeatherData(Lat , Lon)
         .then(response => {
