@@ -10,7 +10,9 @@ blogsRouter.get('/', (req, res) =>{
 
 blogsRouter.post('/', (req, res) => {
 
-    const blog = new Blog(req.body)
+    const body_copy = {...req.body}
+    const blog = new Blog({...body_copy, likes: body_copy.likes || 0})
+
     blog
         .save()
         .then(result =>{
