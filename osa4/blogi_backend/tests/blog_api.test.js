@@ -15,7 +15,6 @@ describe.only('Blogs have', ()=>{
         await new_blog_1.save()
         await new_blog_2.save()
     })
-
     
     test(' Right amount', async () =>{
   
@@ -67,7 +66,7 @@ describe.only('Blogs have', ()=>{
 
     })
 
-    test.only(' 0 likes when no assigned value', async ()=>{
+    test(' 0 likes when no assigned value', async ()=>{
 
         const NewPost = {_id: "5a411b3a1b54a676234d1234",
         title:"Javascript testing",
@@ -83,22 +82,63 @@ describe.only('Blogs have', ()=>{
         const blogs = await api.get('/api/blogs')
 
         blogs.body.forEach( blog =>{
-            console.log(blog.likes)
             expect(blog.likes).not.toBe(null)
         })
 
+    })
 
+
+    test('  fields title and url', async()=>{
+
+        const NewPost = {_id: "9a411b3a1b54a676234d1234",
+        title:NaN,
+        author:"IlmoK",
+        url:NaN,
+        likes: 3,
+        __v:0
+        }
+
+        await api.post('/api/blogs').send(NewPost) 
+        expect(400)
 
 
     })
 
-    
-    
-      
+    test(' can be deleted', async ()=>{
+
+        const newBlog = {_id: "0a411b3a1b54a676234d1234",
+        title:"Javascript testing",
+        author:"IlmoK",
+        url:'www.IlmoK.fi',
+        likes: 9,
+        __v:0
+        }
+
+        const newBlogID =newBlog._id
+
+        const blog = new Blog(newBlog)
+        await blog.save()
+
+        await api.delete(`/api/blogs/${newBlogID}`)
+        expect(204)
+
+
+    })
+
+    test(' can edit likes', async ()=>{
+        const newLikes =  10
+        const id = "0a411b3a1b54a676234d1234"
+
+        await api.put(`/api/blogs/${id}`).send(String(newLikes))
+        expect(200)
+
+    })
+
+        
     afterAll(async ()=>{
+        console.log('MongoDB connection closed')
         await mongoose.connection.close()
     })
-
 
 
 })
