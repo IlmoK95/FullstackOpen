@@ -2,49 +2,65 @@ const blogsRouter = require('express').Router()
 const { request } = require('http')
 const Blog = require('../models/blog')
 const { response } = require('../app')
+const User = require('../models/user')
+const jwt = require('jsonwebtoken')
+const logger = require('../utils/logger')
 
-blogsRouter.get('/', (req, res) =>{
 
-    Blog.find({}).then(blogs => {
-        res.json(blogs)
-    })
+blogsRouter.get('/', async (req, res) =>{
+
+    const blogs = await Blog.find({}).populate('user')
+    res.json(blogs)
+    
 })
 
 blogsRouter.delete('/:id', async (req, res) => {
 
-    await Blog.findBuIdAndRemove(req.params.id)
-    response.status(204).end()
+    await Blog.findByIdAndRemove(req.params.id)
+    res.status(204).end()
 
 })
 
 
 blogsRouter.put('/:id', async (req, res) => {
-
+    
+    
     const blog = await Blog.findById(req.params.id)
+ 
+
     if (blog){
+
+        const EditedBlog = req.body
+        
         console.log(req.body)
-        const EditedBlog = {...blog, likes : req.body} 
+
         await Blog.findByIdAndUpdate(req.params.id, EditedBlog, { new: true})
-        response.json()
+        res.json()
     }else{
-        response.status(404).end()
+        res.status(404).end()
     }
     
 })
 
-blogsRouter.post('/', (req, res) => {
+blogsRouter.post('/',  async (req, res) => {
 
-
-    const body_copy = {...req.body}
-    const blog = new Blog({...body_copy, likes: body_copy.likes || 0})
-
+    const body_copy = req.body
+    logger.info(body_copy)
+    const decodedToken = jwt.verify(req.token, process.env.SECRET)
+    logger.info(decodedToken)
+    if (!decodedToken.id) {
+      return res.status(401).json({ error: 'token invalid' })
+    }
+    const user = await User.findById(decodedToken.id)
+    const blog = new Blog({...body_copy, user: user._id, likes: body_copy.likes || 0})
 
     if (blog.title!==null && blog.url!==null){
 
-        blog
-        .save()
-        .then(result =>{
-            res.status(201).json(result)})
+      const savedBlog = await blog.save()
+      user.blogs = user.blogs.concat(savedBlog._id)
+      await user.save()
+
+      res.status(201).json(savedBlog)
 
     }else{
         res.statusCode(400).end

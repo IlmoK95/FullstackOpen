@@ -7,6 +7,7 @@ const getAll =()=> {
 }
 
 const AddNew =( newObj )=> {
+    console.log(newObj)
     return axios.post(baseURL, newObj)
 }
 

@@ -1,24 +1,14 @@
 {
   "persons": [
     {
-      "name": "sadafseadghg",
-      "number": "24w5w556",
-      "id": 1
-    },
-    {
-      "name": "kksdjkdld",
-      "number": "123423455",
-      "id": 2
-    },
-    {
-      "name": "aarni",
-      "number": "9987789767",
-      "id": 4
-    },
-    {
       "name": "Ilmo Kapanen",
       "number": "997839003",
       "id": 6
+    },
+    {
+      "name": "Anni Korpinen",
+      "number": "884900020++2",
+      "id": 7
     }
   ]
 }

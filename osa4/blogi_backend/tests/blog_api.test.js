@@ -3,6 +3,7 @@ const app = require('../app')
 const supertest = require('supertest')
 const api = supertest(app)
 const Blog = require('../models/blog')
+const User = require('../models/user')
 const test_helper = require('./Likes.test')
 
 
@@ -115,7 +116,6 @@ describe.only('Blogs have', ()=>{
         }
 
         const newBlogID =newBlog._id
-
         const blog = new Blog(newBlog)
         await blog.save()
 
@@ -128,11 +128,35 @@ describe.only('Blogs have', ()=>{
     test(' can edit likes', async ()=>{
         const newLikes =  10
         const id = "0a411b3a1b54a676234d1234"
-
         await api.put(`/api/blogs/${id}`).send(String(newLikes))
         expect(200)
 
     })
+
+
+    test(' don`t add users with same name', async ()=>{
+
+        await User.deleteOne({userName : "Calle95"})
+        const user = new User ({userName: "Calle95", name: "Kalle", password: "1234567"})
+
+        await user.save()
+        console.log('user saved')
+
+        const testUser = {userName: "Calle95", name: "Kallu", password: "1234576"}
+
+        await api.post('/api/users/').send(testUser)
+        expect(400)
+    })
+
+
+    test.only(' don`t add users with too short password', async ()=>{
+
+        const testUser = {userName: "newuser", name: "Kallu", password: "12"}
+        await api.post('/api/users/').send(testUser)
+        expect(400)
+
+    })
+
 
         
     afterAll(async ()=>{
