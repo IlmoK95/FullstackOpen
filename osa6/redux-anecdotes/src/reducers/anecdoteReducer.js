@@ -40,7 +40,7 @@ export const appendVote=(content)=>{
   return async (dispatch)=>{
     const updatedAnecdote = {...content, votes: content.votes + 1}
     anecdoteService.addVote(updatedAnecdote)
-                   .then( response => dispatch(initAnecdotes()))
+                   .then( () => dispatch(initAnecdotes()))
   }
 }
 
